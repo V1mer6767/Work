@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0b0614" />
+  <title>Трекер робочих годин</title>
+
+  <style>
+    :root{
+      --bg:#0b0614;
+      --text:#f2ecff;
+      --muted:#b9a8d6;
+      --line:rgba(178,128,255,.18);
+      --accent:#b280ff;
+      --accent2:#7c4dff;
+      --danger:#ff4d6d;
+      --shadow: 0 14px 40px rgba(0,0,0,.45);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background:
+        radial-gradient(900px 450px at 80% -10%, rgba(178,128,255,.22), transparent 60%),
+        radial-gradient(700px 420px at 10% 10%, rgba(124,77,255,.18), transparent 55%),
+        var(--bg);
+      color:var(--text);
+      min-height:100vh;
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:22px;display:grid;gap:18px;}
+    header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+    .title{display:flex;flex-direction:column;gap:4px;}
+    h1{margin:0;font-size:22px;letter-spacing:.2px;}
+    .sub{color:var(--muted);font-size:13px;line-height:1.3}
+    .pill{
+      display:flex;gap:8px;align-items:center;
+      background:rgba(178,128,255,.12);
+      border:1px solid rgba(178,128,255,.25);
+      padding:10px 12px;border-radius:999px;
+      box-shadow:0 8px 22px rgba(0,0,0,.25);
+      user-select:none;white-space:nowrap;
+    }
+    .pill .dot{
+      width:9px;height:9px;border-radius:99px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      box-shadow:0 0 0 6px rgba(178,128,255,.12);
+    }
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;}
+    @media (max-width: 980px){.grid{grid-template-columns:1fr}header{flex-direction:column;align-items:stretch}.pill{justify-content:center}}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .cardHead{
+      padding:16px 16px 12px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,.01);
+    }
+    .cardHead h2{margin:0;font-size:15px;}
+    .cardBody{padding:16px;display:grid;gap:12px;}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    @media (max-width: 560px){.row{grid-template-columns:1fr}}
+    label{display:grid;gap:6px;font-size:12px;color:var(--muted);}
+    input, select{
+      width:100%;padding:12px 12px;border-radius:14px;
+      border:1px solid rgba(178,128,255,.22);
+      background:rgba(0,0,0,.18);
+      color:var(--text);outline:none;transition:.15s;
+    }
+    input:focus, select:focus{
+      border-color: rgba(178,128,255,.55);
+      box-shadow: 0 0 0 4px rgba(178,128,255,.12);
+    }
+    .btnRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:4px;}
+    .btn{
+      border:none;border-radius:14px;padding:12px 14px;cursor:pointer;color:var(--text);
+      background:linear-gradient(135deg, rgba(178,128,255,.95), rgba(124,77,255,.95));
+      box-shadow: 0 10px 24px rgba(124,77,255,.25);
+      font-weight:700;letter-spacing:.2px;transition:transform .08s ease, filter .15s ease;
+      display:inline-flex;align-items:center;gap:8px;
+    }
+    .btn:active{transform: translateY(1px)}
+    .btn.secondary{
+      background:rgba(178,128,255,.12);
+      border:1px solid rgba(178,128,255,.25);
+      box-shadow:none;font-weight:600;
+    }
+    .btn.danger{
+      background:rgba(255,77,109,.12);
+      border:1px solid rgba(255,77,109,.35);
+      box-shadow:none;font-weight:700;color:#ffd3db;
+    }
+    .kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .kpi{
+      background:rgba(0,0,0,.18);
+      border:1px solid rgba(178,128,255,.18);
+      border-radius:16px;padding:12px;display:grid;gap:6px;
+    }
+    .kpi small{color:var(--muted)}
+    .kpi strong{font-size:18px}
+    .mono{font-variant-numeric: tabular-nums;font-feature-settings:"tnum" 1;}
+    table{
+      width:100%;border-collapse:collapse;border-radius:14px;
+      border:1px solid rgba(178,128,255,.16);
+      background:rgba(0,0,0,.14);
+      overflow:hidden;
+    }
+    th, td{padding:10px;border-bottom:1px solid rgba(178,128,255,.12);font-size:13px;text-align:left;vertical-align:middle;}
+    th{color:var(--muted);font-weight:700;font-size:12px;}
+    tr:last-child td{border-bottom:none}
+    .actions{display:flex;gap:8px;align-items:center;}
+    .iconBtn{
+      border:none;cursor:pointer;padding:8px 10px;border-radius:12px;
+      background:rgba(178,128,255,.12);
+      border:1px solid rgba(178,128,255,.22);
+      color:var(--text);font-weight:800;
+    }
+    .iconBtn.del{
+      background:rgba(255,77,109,.12);
+      border-color: rgba(255,77,109,.30);
+      color:#ffd3db;
+    }
+    .note{color:var(--muted);font-size:12px;line-height:1.35;}
+    .toast{
+      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+      background:rgba(18,10,34,.92);
+      border:1px solid rgba(178,128,255,.25);
+      box-shadow: 0 16px 40px rgba(0,0,0,.45);
+      color:var(--text);padding:10px 12px;border-radius:999px;font-size:13px;
+      opacity:0;pointer-events:none;transition:opacity .18s ease, transform .18s ease;
+      z-index:9999;
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(-2px);}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Трекер робочих годин</h1>
+        <div class="sub">2 роботи • 2 ставки • підрахунок годин та заробітку за тиждень • збереження у браузері</div>
+      </div>
+      <div class="pill" title="Поточний тиждень">
+        <span class="dot"></span>
+        <span><strong id="weekLabel">Тиждень</strong></span>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <div class="cardHead">
+          <h2>Додати години</h2>
+          <button class="btn secondary" onclick="today()">Сьогодні</button>
+        </div>
+
+        <div class="cardBody">
+          <div class="row">
+            <label>
+              Дата (календар)
+              <input type="date" id="dateInput">
+            </label>
+
+            <label>
+              Робота
+              <select id="jobSelect">
+                <option value="job1">Робота 1 (3 €/год)</option>
+                <option value="job2">Робота 2 (1.5 €/год)</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="row">
+            <label>
+              Години (можна 2.5)
+              <input type="number" id="hoursInput" inputmode="decimal" step="0.25" min="0" placeholder="Напр. 6.5">
+            </label>
+
+            <label>
+              Примітка (необов’язково)
+              <input type="text" id="noteInput" placeholder="Напр. зміна вечір">
+            </label>
+          </div>
+
+          <div class="btnRow">
+            <button class="btn" onclick="addEntry()">+ Додати</button>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn secondary" onclick="exportJson()">Експорт JSON</button>
+              <button class="btn danger" onclick="clearWeek()">Очистити цей тиждень</button>
+            </div>
+          </div>
+
+          <div class="note">Все зберігається локально у браузері (localStorage).</div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end;">
+            <button class="btn secondary" onclick="shiftWeek(-7)">← Мин. тиждень</button>
+            <button class="btn secondary" onclick="shiftWeek(7)">Наст. тиждень →</button>
+          </div>
+
+          <div style="overflow:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:110px">Дата</th>
+                  <th style="width:120px">Робота</th>
+                  <th style="width:90px">Год</th>
+                  <th style="width:110px">€</th>
+                  <th>Примітка</th>
+                  <th style="width:130px">Дії</th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="cardHead">
+          <h2>Підсумок тижня</h2>
+          <button class="btn secondary" onclick="setRates()">Змінити ставки</button>
+        </div>
+
+        <div class="cardBody">
+          <div class="kpis">
+            <div class="kpi"><small>Години (всього)</small><strong class="mono" id="kpiHours">0.00</strong></div>
+            <div class="kpi"><small>Заробіток (всього)</small><strong class="mono" id="kpiMoney">0.00 €</strong></div>
+            <div class="kpi"><small>Робота 1 • години</small><strong class="mono" id="kpiH1">0.00</strong></div>
+            <div class="kpi"><small>Робота 1 • €</small><strong class="mono" id="kpiM1">0.00 €</strong></div>
+            <div class="kpi"><small>Робота 2 • години</small><strong class="mono" id="kpiH2">0.00</strong></div>
+            <div class="kpi"><small>Робота 2 • €</small><strong class="mono" id="kpiM2">0.00 €</strong></div>
+          </div>
+
+          <div class="note" id="ratesNote"></div>
+          <div class="note">Версія: <span id="ver"></span></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ====== VERSION (щоб ти точно бачив, що оновилось на Pages) ======
+    const APP_VERSION = "SINGLE-HTML-1.0.0";
+    document.getElementById("ver").textContent = APP_VERSION;
+
+    // ====== STORAGE ======
+    const STORAGE_KEY = "work_hours_entries_single";
+    const SETTINGS_KEY = "work_hours_rates_single";
+
+    const defaultRates = { job1: 3.0, job2: 1.5 };
+    let rates = loadRates();
+    let entries = loadEntries();
+
+    // week anchor
+    let weekAnchor = stripTime(new Date());
+
+    // elements
+    const dateInput = document.getElementById("dateInput");
+    const jobSelect = document.getElementById("jobSelect");
+    const hoursInput = document.getElementById("hoursInput");
+    const noteInput = document.getElementById("noteInput");
+    const rowsEl = document.getElementById("rows");
+
+    // init
+    dateInput.value = toISODate(new Date());
+    renderAll();
+
+    // ====== ACTIONS (глобальні функції для onclick) ======
+    function today(){
+      weekAnchor = stripTime(new Date());
+      dateInput.value = toISODate(new Date());
+      renderAll();
+      toast("Поточний тиждень ✅");
+    }
+
+    function shiftWeek(days){
+      weekAnchor = addDays(weekAnchor, days);
+      renderAll();
+    }
+
+    function addEntry(){
+      const date = (dateInput.value || "").trim();
+      const job = jobSelect.value;
+      const hours = parseNumber(hoursInput.value);
+      const note = (noteInput.value || "").trim();
+
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return toast("Вибери дату календарем 📅");
+      if (!isFinite(hours) || hours <= 0) return toast("Вкажи години (>0) ⏱️");
+
+      entries.push({
+        id: makeId(),
+        date,
+        job,
+        hours: round2(hours),
+        note
+      });
+
+      saveEntries(entries);
+      hoursInput.value = "";
+      noteInput.value = "";
+      renderAll();
+      toast("Додано ✅");
+    }
+
+    function clearWeek(){
+      const { start, end } = getWeekRange(weekAnchor);
+      const before = entries.length;
+      entries = entries.filter(e => {
+        const d = new Date(e.date + "T00:00:00");
+        return !(d >= start && d <= end);
+      });
+      saveEntries(entries);
+      renderAll();
+      toast(before === entries.length ? "Немає записів у цьому тижні" : "Тиждень очищено 🧹");
+    }
+
+    function exportJson(){
+      const data = { exportedAt: new Date().toISOString(), appVersion: APP_VERSION, rates, entries };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "work-hours-export.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast("Експорт зроблено 📦");
+    }
+
+    function setRates(){
+      const r1 = prompt("Ставка Робота 1 (€/год):", String(rates.job1));
+      if (r1 === null) return;
+      const r2 = prompt("Ставка Робота 2 (€/год):", String(rates.job2));
+      if (r2 === null) return;
+
+      const n1 = parseNumber(r1);
+      const n2 = parseNumber(r2);
+      if (!isFinite(n1) || !isFinite(n2) || n1 < 0 || n2 < 0) return toast("Некоректні ставки 😅");
+
+      rates = { job1: round2(n1), job2: round2(n2) };
+      saveRates(rates);
+      renderAll();
+      toast("Ставки оновлено ✅");
+    }
+
+    // ====== RENDER ======
+    function renderAll(){
+      applyRatesToSelect();
+
+      const { start, end } = getWeekRange(weekAnchor);
+      document.getElementById("weekLabel").textContent = formatWeekLabel(start, end);
+      document.getElementById("ratesNote").textContent =
+        `Ставки: Р1 = ${fmt(rates.job1)} €/год • Р2 = ${fmt(rates.job2)} €/год`;
+
+      const weekEntries = entries
+        .map(e => ({...e, dateObj: new Date(e.date + "T00:00:00")}))
+        .filter(e => e.dateObj >= start && e.dateObj <= end)
+        .sort((a,b) => a.dateObj - b.dateObj);
+
+      renderTable(weekEntries);
+      renderSummary(weekEntries);
+    }
+
+    function renderTable(list){
+      rowsEl.innerHTML = "";
+      if (list.length === 0){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="6" style="color:var(--muted); padding:14px;">Немає записів за цей тиждень.</td>`;
+        rowsEl.appendChild(tr);
+        return;
+      }
+
+      for (const e of list){
+        const money = round2(e.hours * rates[e.job]);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${formatDateShort(e.dateObj)}</td>
+          <td>${e.job === "job1" ? "Робота 1" : "Робота 2"}</td>
+          <td class="mono">${fmt(e.hours)}</td>
+          <td class="mono">${fmt(money)} €</td>
+          <td style="color:var(--muted)">${escapeHtml(e.note || "")}</td>
+          <td>
+            <div class="actions">
+              <button class="iconBtn" onclick="editEntry('${e.id}')">✎</button>
+              <button class="iconBtn del" onclick="deleteEntry('${e.id}')">🗑</button>
+            </div>
+          </td>
+        `;
+        rowsEl.appendChild(tr);
+      }
+    }
+
+    function renderSummary(list){
+      let h1 = 0, h2 = 0;
+      for (const e of list){
+        if (e.job === "job1") h1 += e.hours; else h2 += e.hours;
+      }
+      h1 = round2(h1); h2 = round2(h2);
+      const totalH = round2(h1 + h2);
+
+      const m1 = round2(h1 * rates.job1);
+      const m2 = round2(h2 * rates.job2);
+      const totalM = round2(m1 + m2);
+
+      setText("kpiH1", fmt(h1));
+      setText("kpiM1", `${fmt(m1)} €`);
+      setText("kpiH2", fmt(h2));
+      setText("kpiM2", `${fmt(m2)} €`);
+      setText("kpiHours", fmt(totalH));
+      setText("kpiMoney", `${fmt(totalM)} €`);
+    }
+
+    function setText(id, v){ document.getElementById(id).textContent = v; }
+
+    function applyRatesToSelect(){
+      const opt1 = jobSelect.querySelector('option[value="job1"]');
+      const opt2 = jobSelect.querySelector('option[value="job2"]');
+      opt1.textContent = `Робота 1 (${fmt(rates.job1)} €/год)`;
+      opt2.textContent = `Робота 2 (${fmt(rates.job2)} €/год)`;
+    }
+
+    // ====== EDIT/DELETE ======
+    function deleteEntry(id){
+      entries = entries.filter(x => x.id !== id);
+      saveEntries(entries);
+      renderAll();
+      toast("Видалено 🗑");
+    }
+
+    function editEntry(id){
+      const e = entries.find(x => x.id === id);
+      if (!e) return;
+
+      const newHours = prompt("Нові години:", String(e.hours));
+      if (newHours === null) return;
+      const nH = parseNumber(newHours);
+      if (!isFinite(nH) || nH <= 0) return toast("Некоректні години");
+
+      const newNote = prompt("Примітка (можна пусто):", e.note || "");
+      if (newNote === null) return;
+
+      e.hours = round2(nH);
+      e.note = String(newNote).trim();
+      saveEntries(entries);
+      renderAll();
+      toast("Оновлено ✅");
+    }
+
+    // ====== STORAGE ======
+    function loadEntries(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      }catch{ return []; }
+    }
+    function saveEntries(arr){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    }
+    function loadRates(){
+      try{
+        const raw = localStorage.getItem(SETTINGS_KEY);
+        const parsed = raw ? JSON.parse(raw) : null;
+        if (parsed && typeof parsed.job1 === "number" && typeof parsed.job2 === "number") return parsed;
+        return defaultRates;
+      }catch{ return defaultRates; }
+    }
+    function saveRates(obj){
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(obj));
+    }
+
+    // ====== WEEK ======
+    function getWeekRange(anchor){
+      const d = stripTime(new Date(anchor));
+      const day = (d.getDay() + 6) % 7; // Mon=0..Sun=6
+      const start = addDays(d, -day);
+      const end = addDays(start, 6);
+      return { start, end };
+    }
+    function formatWeekLabel(start, end){
+      const s = `${pad2(start.getDate())}.${pad2(start.getMonth()+1)}`;
+      const e = `${pad2(end.getDate())}.${pad2(end.getMonth()+1)}`;
+      return `${s} – ${e}`;
+    }
+
+    // ====== UTILS ======
+    function stripTime(d){ const x = new Date(d); x.setHours(0,0,0,0); return x; }
+    function addDays(d,n){ const x = new Date(d); x.setDate(x.getDate()+n); return stripTime(x); }
+    function toISODate(d){
+      const x = stripTime(d);
+      return `${x.getFullYear()}-${pad2(x.getMonth()+1)}-${pad2(x.getDate())}`;
+    }
+    function formatDateShort(d){ return `${pad2(d.getDate())}.${pad2(d.getMonth()+1)}`; }
+    function pad2(n){ return String(n).padStart(2,"0"); }
+    function parseNumber(v){
+      if (typeof v !== "string") v = String(v ?? "");
+      v = v.replace(",", ".").trim();
+      return Number(v);
+    }
+    function round2(n){ return Math.round(n*100)/100; }
+    function fmt(n){ return (Math.round(Number(n)*100)/100).toFixed(2); }
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    }
+    function makeId(){ return `${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}`; }
+    function toast(msg){
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(el._t);
+      el._t = setTimeout(()=> el.classList.remove("show"), 1800);
+    }
+  </script>
+</body>
+</html>
