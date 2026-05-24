@@ -1,523 +1,418 @@
 <!doctype html>
 <html lang="uk">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#0b0614" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="theme-color" content="#0f0f0f"/>
   <title>Трекер робочих годин</title>
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#0b0614;
-      --text:#f2ecff;
-      --muted:#b9a8d6;
-      --line:rgba(178,128,255,.18);
-      --accent:#b280ff;
-      --accent2:#7c4dff;
-      --danger:#ff4d6d;
-      --shadow: 0 14px 40px rgba(0,0,0,.45);
-      --radius:18px;
+      --bg:#0f0f0f;
+      --surface:#161616;
+      --surface2:#1e1e1e;
+      --surface3:#252525;
+      --border:#2a2a2a;
+      --border2:#333;
+      --text:#f5f5f5;
+      --muted:#888;
+      --muted2:#555;
+      --accent:#e8ff47;
+      --accent-dim:rgba(232,255,71,.08);
+      --accent-dim2:rgba(232,255,71,.15);
+      --danger:#ff4444;
+      --danger-dim:rgba(255,68,68,.1);
+      --success:#4dff91;
+      --r:10px;
+      --r2:14px;
     }
-    *{box-sizing:border-box}
+    *{box-sizing:border-box;margin:0;padding:0;}
     body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background:
-        radial-gradient(900px 450px at 80% -10%, rgba(178,128,255,.22), transparent 60%),
-        radial-gradient(700px 420px at 10% 10%, rgba(124,77,255,.18), transparent 55%),
-        var(--bg);
+      font-family:'DM Sans',sans-serif;
+      background:var(--bg);
       color:var(--text);
       min-height:100vh;
+      font-size:14px;
+      line-height:1.5;
     }
-    .wrap{max-width:1100px;margin:0 auto;padding:22px;display:grid;gap:18px;}
-    header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
-    .title{display:flex;flex-direction:column;gap:4px;}
-    h1{margin:0;font-size:22px;letter-spacing:.2px;}
-    .sub{color:var(--muted);font-size:13px;line-height:1.3}
-    .pill{
-      display:flex;gap:8px;align-items:center;
-      background:rgba(178,128,255,.12);
-      border:1px solid rgba(178,128,255,.25);
-      padding:10px 12px;border-radius:999px;
-      box-shadow:0 8px 22px rgba(0,0,0,.25);
-      user-select:none;white-space:nowrap;
-    }
-    .pill .dot{
-      width:9px;height:9px;border-radius:99px;
-      background:linear-gradient(135deg,var(--accent),var(--accent2));
-      box-shadow:0 0 0 6px rgba(178,128,255,.12);
-    }
-    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;}
-    @media (max-width: 980px){.grid{grid-template-columns:1fr}header{flex-direction:column;align-items:stretch}.pill{justify-content:center}}
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .cardHead{
-      padding:16px 16px 12px;
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      border-bottom:1px solid var(--line);
-      background:rgba(255,255,255,.01);
-    }
-    .cardHead h2{margin:0;font-size:15px;}
-    .cardBody{padding:16px;display:grid;gap:12px;}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-    @media (max-width: 560px){.row{grid-template-columns:1fr}}
-    label{display:grid;gap:6px;font-size:12px;color:var(--muted);}
-    input, select{
-      width:100%;padding:12px 12px;border-radius:14px;
-      border:1px solid rgba(178,128,255,.22);
-      background:rgba(0,0,0,.18);
-      color:var(--text);outline:none;transition:.15s;
-    }
-    input:focus, select:focus{
-      border-color: rgba(178,128,255,.55);
-      box-shadow: 0 0 0 4px rgba(178,128,255,.12);
-    }
-    .btnRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:4px;}
-    .btn{
-      border:none;border-radius:14px;padding:12px 14px;cursor:pointer;color:var(--text);
-      background:linear-gradient(135deg, rgba(178,128,255,.95), rgba(124,77,255,.95));
-      box-shadow: 0 10px 24px rgba(124,77,255,.25);
-      font-weight:700;letter-spacing:.2px;transition:transform .08s ease, filter .15s ease;
-      display:inline-flex;align-items:center;gap:8px;
-    }
-    .btn:active{transform: translateY(1px)}
-    .btn.secondary{
-      background:rgba(178,128,255,.12);
-      border:1px solid rgba(178,128,255,.25);
-      box-shadow:none;font-weight:600;
-    }
-    .btn.danger{
-      background:rgba(255,77,109,.12);
-      border:1px solid rgba(255,77,109,.35);
-      box-shadow:none;font-weight:700;color:#ffd3db;
-    }
-    .kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-    .kpi{
-      background:rgba(0,0,0,.18);
-      border:1px solid rgba(178,128,255,.18);
-      border-radius:16px;padding:12px;display:grid;gap:6px;
-    }
-    .kpi small{color:var(--muted)}
-    .kpi strong{font-size:18px}
-    .mono{font-variant-numeric: tabular-nums;font-feature-settings:"tnum" 1;}
-    table{
-      width:100%;border-collapse:collapse;border-radius:14px;
-      border:1px solid rgba(178,128,255,.16);
-      background:rgba(0,0,0,.14);
-      overflow:hidden;
-    }
-    th, td{padding:10px;border-bottom:1px solid rgba(178,128,255,.12);font-size:13px;text-align:left;vertical-align:middle;}
-    th{color:var(--muted);font-weight:700;font-size:12px;}
-    tr:last-child td{border-bottom:none}
-    .actions{display:flex;gap:8px;align-items:center;}
-    .iconBtn{
-      border:none;cursor:pointer;padding:8px 10px;border-radius:12px;
-      background:rgba(178,128,255,.12);
-      border:1px solid rgba(178,128,255,.22);
-      color:var(--text);font-weight:800;
-    }
-    .iconBtn.del{
-      background:rgba(255,77,109,.12);
-      border-color: rgba(255,77,109,.30);
-      color:#ffd3db;
-    }
-    .note{color:var(--muted);font-size:12px;line-height:1.35;}
-    .toast{
-      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
-      background:rgba(18,10,34,.92);
-      border:1px solid rgba(178,128,255,.25);
-      box-shadow: 0 16px 40px rgba(0,0,0,.45);
-      color:var(--text);padding:10px 12px;border-radius:999px;font-size:13px;
-      opacity:0;pointer-events:none;transition:opacity .18s ease, transform .18s ease;
-      z-index:9999;
-    }
-    .toast.show{opacity:1;transform:translateX(-50%) translateY(-2px);}
+    .mono{font-family:'DM Mono',monospace;}
+    .app{max-width:960px;margin:0 auto;padding:32px 20px 80px;}
+    .header{margin-bottom:32px;}
+    .header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px;}
+    .brand h1{font-size:22px;font-weight:600;letter-spacing:-.3px;color:var(--text);}
+    .brand p{font-size:12px;color:var(--muted);margin-top:2px;}
+    .week-nav{display:flex;align-items:center;gap:0;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;}
+    .week-nav button{background:none;border:none;color:var(--muted);cursor:pointer;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:13px;transition:color .15s,background .15s;}
+    .week-nav button:hover{color:var(--text);background:var(--surface3);}
+    .week-nav .week-label{padding:8px 16px;font-size:13px;font-weight:500;color:var(--text);border-left:1px solid var(--border);border-right:1px solid var(--border);min-width:130px;text-align:center;white-space:nowrap;}
+    .week-nav .btn-today{background:none;border:none;color:var(--accent);cursor:pointer;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;transition:background .15s;}
+    .week-nav .btn-today:hover{background:var(--accent-dim);}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;}
+    @media(max-width:600px){.stats{grid-template-columns:1fr 1fr;}}
+    .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:16px 14px;}
+    .stat.accent{background:var(--accent-dim);border-color:rgba(232,255,71,.25);}
+    .stat label{font-size:11px;color:var(--muted);letter-spacing:.4px;text-transform:uppercase;display:block;margin-bottom:6px;}
+    .stat strong{font-size:22px;font-weight:600;color:var(--text);display:block;line-height:1;font-family:'DM Mono',monospace;}
+    .stat.accent strong{color:var(--accent);}
+    .stat small{font-size:11px;color:var(--muted2);margin-top:4px;display:block;}
+    .main{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start;}
+    @media(max-width:760px){.main{grid-template-columns:1fr;}}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);}
+    .card-head{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+    .card-head h2{font-size:14px;font-weight:600;color:var(--text);}
+    .card-body{padding:18px;}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+    @media(max-width:480px){.form-grid{grid-template-columns:1fr;}}
+    .field label{font-size:11px;color:var(--muted);display:block;margin-bottom:5px;letter-spacing:.2px;}
+    .field input,.field select{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .15s,box-shadow .15s;}
+    .field input:focus,.field select:focus{border-color:rgba(232,255,71,.4);box-shadow:0 0 0 3px rgba(232,255,71,.07);}
+    .field select option{background:#1e1e1e;}
+    .btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px;}
+    .btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:var(--r);padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;}
+    .btn-primary{background:var(--accent);color:#0f0f0f;}
+    .btn-primary:hover{background:#f5ff7a;}
+    .btn-primary:active{transform:scale(.98);}
+    .btn-ghost{background:var(--surface2);color:var(--muted);border:1px solid var(--border2);}
+    .btn-ghost:hover{color:var(--text);background:var(--surface3);}
+    .btn-danger{background:var(--danger-dim);color:var(--danger);border:1px solid rgba(255,68,68,.2);}
+    .btn-danger:hover{background:rgba(255,68,68,.18);}
+    .table-wrap{overflow-x:auto;margin-top:16px;}
+    table{width:100%;border-collapse:collapse;}
+    th{font-size:11px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+    td{padding:10px 10px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:var(--surface2);}
+    .icon-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;padding:5px 8px;font-size:12px;transition:all .15s;}
+    .icon-btn:hover{color:var(--text);border-color:var(--border2);background:var(--surface3);}
+    .icon-btn.del:hover{color:var(--danger);border-color:rgba(255,68,68,.3);}
+    .empty-row{color:var(--muted);padding:28px;text-align:center;font-size:13px;}
+    .summary-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+    .summary-item:last-child{border-bottom:none;}
+    .summary-item span{color:var(--muted);}
+    .summary-item strong{font-family:'DM Mono',monospace;color:var(--text);}
+    .summary-item.total span{color:var(--text);}
+    .summary-item.total strong{color:var(--accent);font-size:16px;}
+    .history-week{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:6px;cursor:pointer;transition:border-color .15s;}
+    .history-week:hover{border-color:var(--border2);}
+    .history-week-top{display:flex;justify-content:space-between;align-items:center;}
+    .history-week-label{font-size:13px;font-weight:500;}
+    .history-week-money{font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);}
+    .history-week-detail{font-size:11px;color:var(--muted);margin-top:3px;}
+    .alltime{background:var(--accent-dim);border:1px solid rgba(232,255,71,.2);border-radius:var(--r2);padding:16px;margin-bottom:14px;}
+    .alltime label{font-size:11px;color:rgba(232,255,71,.7);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px;}
+    .alltime-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;}
+    .alltime strong{font-family:'DM Mono',monospace;font-size:26px;font-weight:600;color:var(--accent);}
+    .alltime small{font-size:12px;color:rgba(232,255,71,.6);}
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s;}
+    .modal-bg.open{opacity:1;pointer-events:all;}
+    .modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r2);padding:24px;width:340px;max-width:90vw;transform:translateY(8px);transition:transform .2s;}
+    .modal-bg.open .modal{transform:translateY(0);}
+    .modal h3{font-size:16px;font-weight:600;margin-bottom:18px;}
+    .modal .field{margin-bottom:12px;}
+    .modal-btns{display:flex;gap:8px;margin-top:20px;}
+    .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(8px);background:var(--surface3);border:1px solid var(--border2);color:var(--text);padding:10px 18px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:all .18s;z-index:200;white-space:nowrap;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .tabs{display:flex;gap:0;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:16px;}
+    .tab{flex:1;padding:10px;text-align:center;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;transition:all .15s;}
+    .tab:not(:last-child){border-right:1px solid var(--border);}
+    .tab.active{background:var(--surface3);color:var(--text);}
+    .tab:hover:not(.active){color:var(--text);}
+    .job-badge{display:flex;align-items:center;gap:6px;}
+    .job-dot{width:6px;height:6px;border-radius:50%;}
+    .section-hidden{display:none;}
   </style>
 </head>
-
 <body>
-  <div class="wrap">
-    <header>
-      <div class="title">
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <div class="brand">
         <h1>Трекер робочих годин</h1>
-        <div class="sub">2 роботи • 2 ставки • підрахунок годин та заробітку за тиждень • збереження у браузері</div>
+        <p id="jobsSubtitle">завантаження...</p>
       </div>
-      <div class="pill" title="Поточний тиждень">
-        <span class="dot"></span>
-        <span><strong id="weekLabel">Тиждень</strong></span>
+      <div class="week-nav">
+        <button onclick="shiftWeek(-7)">← Пред</button>
+        <div class="week-label" id="weekLabel">...</div>
+        <button onclick="shiftWeek(7)">Наст →</button>
+        <button class="btn-today" onclick="goToday()">Сьогодні</button>
       </div>
-    </header>
+    </div>
+    <div class="stats">
+      <div class="stat"><label>Цей тиждень • год</label><strong id="kpiHours" class="mono">0.00</strong></div>
+      <div class="stat accent"><label>Цей тиждень • €</label><strong id="kpiMoney">0.00</strong></div>
+      <div class="stat"><label>Загальний час</label><strong id="kpiAllH" class="mono">0.00</strong><small>всі тижні</small></div>
+      <div class="stat accent"><label>Всього зароблено</label><strong id="kpiAllM">0.00</strong><small>всі тижні</small></div>
+    </div>
+  </div>
 
-    <div class="grid">
-      <section class="card">
-        <div class="cardHead">
-          <h2>Додати години</h2>
-          <button class="btn secondary" onclick="today()">Сьогодні</button>
-        </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('week',this)">Цей тиждень</button>
+    <button class="tab" onclick="switchTab('history',this)">Вся історія</button>
+  </div>
 
-        <div class="cardBody">
-          <div class="row">
-            <label>
-              Дата (календар)
-              <input type="date" id="dateInput">
-            </label>
-
-            <label>
-              Робота
-              <select id="jobSelect">
-                <option value="job1">Робота 1 (3 €/год)</option>
-                <option value="job2">Робота 2 (1.5 €/год)</option>
-              </select>
-            </label>
-          </div>
-
-          <div class="row">
-            <label>
-              Години (можна 2.5)
-              <input type="number" id="hoursInput" inputmode="decimal" step="0.25" min="0" placeholder="Напр. 6.5">
-            </label>
-
-            <label>
-              Примітка (необов’язково)
-              <input type="text" id="noteInput" placeholder="Напр. зміна вечір">
-            </label>
-          </div>
-
-          <div class="btnRow">
-            <button class="btn" onclick="addEntry()">+ Додати</button>
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-              <button class="btn secondary" onclick="exportJson()">Експорт JSON</button>
-              <button class="btn danger" onclick="clearWeek()">Очистити цей тиждень</button>
+  <div id="tab-week">
+    <div class="main">
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-head"><h2>Додати запис</h2></div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="field"><label>Дата</label><input type="date" id="dateInput"></div>
+              <div class="field"><label>Робота</label><select id="jobSelect"></select></div>
+              <div class="field"><label>Години (напр. 6.5)</label><input type="number" id="hoursInput" inputmode="decimal" step="0.25" min="0" placeholder="0.00"></div>
+              <div class="field"><label>Примітка</label><input type="text" id="noteInput" placeholder="необов'язково"></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" onclick="addEntry()">+ Додати</button>
+              <button class="btn btn-ghost" onclick="exportJson()">Експорт JSON</button>
+              <button class="btn btn-danger" onclick="clearWeek()">Очистити тиждень</button>
             </div>
           </div>
-
-          <div class="note">Все зберігається локально у браузері (localStorage).</div>
-
-          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end;">
-            <button class="btn secondary" onclick="shiftWeek(-7)">← Мин. тиждень</button>
-            <button class="btn secondary" onclick="shiftWeek(7)">Наст. тиждень →</button>
-          </div>
-
-          <div style="overflow:auto">
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>Записи тижня</h2></div>
+          <div class="table-wrap">
             <table>
-              <thead>
-                <tr>
-                  <th style="width:110px">Дата</th>
-                  <th style="width:120px">Робота</th>
-                  <th style="width:90px">Год</th>
-                  <th style="width:110px">€</th>
-                  <th>Примітка</th>
-                  <th style="width:130px">Дії</th>
-                </tr>
-              </thead>
+              <thead><tr><th>Дата</th><th>Робота</th><th>Год</th><th>€</th><th>Примітка</th><th></th></tr></thead>
               <tbody id="rows"></tbody>
             </table>
           </div>
         </div>
-      </section>
-
-      <aside class="card">
-        <div class="cardHead">
-          <h2>Підсумок тижня</h2>
-          <button class="btn secondary" onclick="setRates()">Змінити ставки</button>
-        </div>
-
-        <div class="cardBody">
-          <div class="kpis">
-            <div class="kpi"><small>Години (всього)</small><strong class="mono" id="kpiHours">0.00</strong></div>
-            <div class="kpi"><small>Заробіток (всього)</small><strong class="mono" id="kpiMoney">0.00 €</strong></div>
-            <div class="kpi"><small>Робота 1 • години</small><strong class="mono" id="kpiH1">0.00</strong></div>
-            <div class="kpi"><small>Робота 1 • €</small><strong class="mono" id="kpiM1">0.00 €</strong></div>
-            <div class="kpi"><small>Робота 2 • години</small><strong class="mono" id="kpiH2">0.00</strong></div>
-            <div class="kpi"><small>Робота 2 • €</small><strong class="mono" id="kpiM2">0.00 €</strong></div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:12px;">
+          <div class="card-head">
+            <h2>Підсумок тижня</h2>
+            <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;" onclick="openRates()">⚙ Ставки</button>
           </div>
-
-          <div class="note" id="ratesNote"></div>
-          <div class="note">Версія: <span id="ver"></span></div>
+          <div class="card-body" id="weekSummary"></div>
         </div>
-      </aside>
+        <div class="card">
+          <div class="card-head"><h2>Нещодавні тижні</h2></div>
+          <div class="card-body" id="recentWeeks" style="padding:12px 14px;"></div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div id="tab-history" class="section-hidden">
+    <div class="alltime">
+      <label>Всього зароблено за весь час</label>
+      <div class="alltime-row">
+        <strong id="histAllMoney">0.00 €</strong>
+        <small id="histAllHours">0.00 год</small>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <h2>Всі тижні</h2>
+        <span id="histWeekCount" style="font-size:12px;color:var(--muted);">...</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Тиждень</th><th>Годин</th><th>Заробіток</th><th>Записів</th></tr></thead>
+          <tbody id="histRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 
-  <script>
-    // ====== VERSION (щоб ти точно бачив, що оновилось на Pages) ======
-    const APP_VERSION = "SINGLE-HTML-1.0.0";
-    document.getElementById("ver").textContent = APP_VERSION;
+<div class="modal-bg" id="modalBg" onclick="closeRatesIfOutside(event)">
+  <div class="modal">
+    <h3>Ставки та роботи</h3>
+    <div id="ratesFields"></div>
+    <div style="margin-top:16px;">
+      <button class="btn btn-ghost" style="font-size:12px;" onclick="addJob()">+ Додати роботу</button>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-primary" onclick="saveRates()">Зберегти</button>
+      <button class="btn btn-ghost" onclick="closeRates()">Скасувати</button>
+    </div>
+  </div>
+</div>
 
-    // ====== STORAGE ======
-    const STORAGE_KEY = "work_hours_entries_single";
-    const SETTINGS_KEY = "work_hours_rates_single";
+<div class="toast" id="toast"></div>
 
-    const defaultRates = { job1: 3.0, job2: 1.5 };
-    let rates = loadRates();
-    let entries = loadEntries();
+<script>
+const ENTRIES_KEY="wh_entries_v2";
+const RATES_KEY="wh_rates_v2";
+const JOB_COLORS=["#7aacff","#ffb83c","#64dca0","#d464ff","#ff6464","#47e8ff"];
+const defaultJobs=[{id:"job1",name:"Робота 1",rate:3.0},{id:"job2",name:"Робота 2",rate:1.5}];
+let jobs=loadJobs();
+let entries=loadEntries();
+let weekAnchor=stripTime(new Date());
+document.getElementById("dateInput").value=toISO(new Date());
+renderAll();
 
-    // week anchor
-    let weekAnchor = stripTime(new Date());
+function switchTab(tab,btn){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("tab-week").classList.toggle("section-hidden",tab!=="week");
+  document.getElementById("tab-history").classList.toggle("section-hidden",tab!=="history");
+  if(tab==="history")renderHistory();
+}
+function goToday(){weekAnchor=stripTime(new Date());document.getElementById("dateInput").value=toISO(new Date());renderAll();toast("Поточний тиждень ✓");}
+function shiftWeek(d){weekAnchor=addDays(weekAnchor,d);renderAll();}
 
-    // elements
-    const dateInput = document.getElementById("dateInput");
-    const jobSelect = document.getElementById("jobSelect");
-    const hoursInput = document.getElementById("hoursInput");
-    const noteInput = document.getElementById("noteInput");
-    const rowsEl = document.getElementById("rows");
+function addEntry(){
+  const date=document.getElementById("dateInput").value.trim();
+  const jobId=document.getElementById("jobSelect").value;
+  const hours=parseNum(document.getElementById("hoursInput").value);
+  const note=document.getElementById("noteInput").value.trim();
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return toast("Вибери дату !");
+  if(!isFinite(hours)||hours<=0)return toast("Вкажи години > 0");
+  entries.push({id:uid(),date,jobId,hours:r2(hours),note});
+  saveEntries();
+  document.getElementById("hoursInput").value="";
+  document.getElementById("noteInput").value="";
+  renderAll();toast("Додано ✓");
+}
+function deleteEntry(id){entries=entries.filter(e=>e.id!==id);saveEntries();renderAll();toast("Видалено");}
+function editEntry(id){
+  const e=entries.find(x=>x.id===id);if(!e)return;
+  const h=prompt("Нові години:",e.hours);if(h===null)return;
+  const n=parseNum(h);if(!isFinite(n)||n<=0)return toast("Некоректне значення");
+  const note=prompt("Примітка:",e.note||"");if(note===null)return;
+  e.hours=r2(n);e.note=note.trim();saveEntries();renderAll();toast("Оновлено ✓");
+}
+function clearWeek(){
+  if(!confirm("Видалити всі записи цього тижня?"))return;
+  const{start,end}=weekRange(weekAnchor);
+  const before=entries.length;
+  entries=entries.filter(e=>{const d=new Date(e.date+"T00:00:00");return!(d>=start&&d<=end);});
+  saveEntries();renderAll();toast(before===entries.length?"Немає записів":"Тиждень очищено");
+}
+function exportJson(){
+  const blob=new Blob([JSON.stringify({jobs,entries},null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="work-hours.json";a.click();toast("Експорт готовий");
+}
 
-    // init
-    dateInput.value = toISODate(new Date());
-    renderAll();
+function renderAll(){
+  buildJobSelect();updateSubtitle();
+  const{start,end}=weekRange(weekAnchor);
+  document.getElementById("weekLabel").textContent=weekLabel(start,end);
+  const wEntries=entries.map(e=>({...e,dObj:new Date(e.date+"T00:00:00")})).filter(e=>e.dObj>=start&&e.dObj<=end).sort((a,b)=>a.dObj-b.dObj);
+  renderTable(wEntries);renderWeekSummary(wEntries);renderTopStats(wEntries);renderRecentWeeks();
+}
+function buildJobSelect(){
+  const sel=document.getElementById("jobSelect");const prev=sel.value;sel.innerHTML="";
+  jobs.forEach(j=>{const opt=document.createElement("option");opt.value=j.id;opt.textContent=`${j.name} (${fmt(j.rate)} €/год)`;sel.appendChild(opt);});
+  if(prev&&jobs.find(j=>j.id===prev))sel.value=prev;
+}
+function updateSubtitle(){document.getElementById("jobsSubtitle").textContent=jobs.map(j=>`${j.name}: ${fmt(j.rate)} €/год`).join(" • ");}
 
-    // ====== ACTIONS (глобальні функції для onclick) ======
-    function today(){
-      weekAnchor = stripTime(new Date());
-      dateInput.value = toISODate(new Date());
-      renderAll();
-      toast("Поточний тиждень ✅");
-    }
+function renderTable(list){
+  const tbody=document.getElementById("rows");
+  if(!list.length){tbody.innerHTML=`<tr><td colspan="6" class="empty-row">Немає записів за цей тиждень</td></tr>`;return;}
+  tbody.innerHTML=list.map(e=>{
+    const job=jobs.find(j=>j.id===e.jobId)||{name:e.jobId,rate:0};
+    const idx=jobs.indexOf(job);
+    const color=JOB_COLORS[idx%JOB_COLORS.length];
+    const money=r2(e.hours*job.rate);
+    return`<tr>
+      <td class="mono">${fmtDate(e.dObj)}</td>
+      <td><div class="job-badge"><span class="job-dot" style="background:${color}"></span><span>${esc(job.name)}</span></div></td>
+      <td class="mono">${fmt(e.hours)}</td>
+      <td class="mono" style="color:var(--accent)">${fmt(money)} €</td>
+      <td style="color:var(--muted);font-size:12px;">${esc(e.note||"")}</td>
+      <td><span style="display:flex;gap:4px;"><button class="icon-btn" onclick="editEntry('${e.id}')">✎</button><button class="icon-btn del" onclick="deleteEntry('${e.id}')">✕</button></span></td>
+    </tr>`;
+  }).join("");
+}
+function renderWeekSummary(list){
+  const el=document.getElementById("weekSummary");
+  let rows="";let totalH=0,totalM=0;
+  jobs.forEach((job,idx)=>{
+    const h=r2(list.filter(e=>e.jobId===job.id).reduce((s,e)=>s+e.hours,0));
+    const m=r2(h*job.rate);totalH+=h;totalM+=m;
+    const color=JOB_COLORS[idx%JOB_COLORS.length];
+    if(h>0)rows+=`<div class="summary-item"><span><span class="job-dot" style="background:${color};display:inline-block;margin-right:6px;"></span>${esc(job.name)}</span><span style="display:flex;gap:18px;"><span class="mono" style="color:var(--muted)">${fmt(h)} год</span><strong class="mono">${fmt(m)} €</strong></span></div>`;
+  });
+  if(!rows)rows=`<div style="color:var(--muted);font-size:13px;padding:8px 0;">Немає записів</div>`;
+  el.innerHTML=rows+`<div class="summary-item total" style="margin-top:8px;padding-top:12px;border-top:1px solid var(--border);"><span style="font-weight:600;">Разом</span><span style="display:flex;gap:18px;"><span class="mono" style="color:var(--muted)">${fmt(r2(totalH))} год</span><strong class="mono">${fmt(r2(totalM))} €</strong></span></div>`;
+}
+function renderTopStats(weekEntries){
+  const wH=r2(weekEntries.reduce((s,e)=>s+e.hours,0));
+  const wM=r2(weekEntries.reduce((s,e)=>{const j=jobs.find(j=>j.id===e.jobId);return s+e.hours*(j?j.rate:0);},0));
+  const aH=r2(entries.reduce((s,e)=>s+e.hours,0));
+  const aM=r2(entries.reduce((s,e)=>{const j=jobs.find(j=>j.id===e.jobId);return s+e.hours*(j?j.rate:0);},0));
+  document.getElementById("kpiHours").textContent=fmt(wH);
+  document.getElementById("kpiMoney").textContent=fmt(wM)+" €";
+  document.getElementById("kpiAllH").textContent=fmt(aH);
+  document.getElementById("kpiAllM").textContent=fmt(aM)+" €";
+}
+function renderRecentWeeks(){
+  const el=document.getElementById("recentWeeks");const weeks=getWeeksSummary();
+  if(!weeks.length){el.innerHTML=`<div style="color:var(--muted);font-size:13px;">Немає даних</div>`;return;}
+  el.innerHTML=weeks.slice(0,6).map(w=>`<div class="history-week" onclick="jumpToWeek('${toISO(w.start)}')"><div class="history-week-top"><span class="history-week-label">${weekLabel(w.start,w.end)}</span><span class="history-week-money">${fmt(w.money)} €</span></div><div class="history-week-detail">${fmt(w.hours)} год · ${w.count} запис(ів)</div></div>`).join("");
+}
+function renderHistory(){
+  const weeks=getWeeksSummary();
+  const aH=r2(entries.reduce((s,e)=>s+e.hours,0));
+  const aM=r2(entries.reduce((s,e)=>{const j=jobs.find(j=>j.id===e.jobId);return s+e.hours*(j?j.rate:0);},0));
+  document.getElementById("histAllMoney").textContent=fmt(aM)+" €";
+  document.getElementById("histAllHours").textContent=fmt(aH)+" год";
+  document.getElementById("histWeekCount").textContent=`${weeks.length} тижнів`;
+  const tbody=document.getElementById("histRows");
+  if(!weeks.length){tbody.innerHTML=`<tr><td colspan="4" class="empty-row">Немає даних</td></tr>`;return;}
+  tbody.innerHTML=weeks.map(w=>`<tr><td style="cursor:pointer;color:var(--accent);" onclick="jumpToWeekAndTab('${toISO(w.start)}')">${weekLabel(w.start,w.end)}</td><td class="mono">${fmt(w.hours)}</td><td class="mono" style="color:var(--accent)">${fmt(w.money)} €</td><td>${w.count}</td></tr>`).join("");
+}
+function jumpToWeek(isoDate){weekAnchor=new Date(isoDate+"T00:00:00");renderAll();document.querySelectorAll(".tab")[0].click();}
+function jumpToWeekAndTab(isoDate){weekAnchor=new Date(isoDate+"T00:00:00");renderAll();document.querySelectorAll(".tab")[0].click();}
 
-    function shiftWeek(days){
-      weekAnchor = addDays(weekAnchor, days);
-      renderAll();
-    }
+function getWeeksSummary(){
+  if(!entries.length)return[];
+  const map={};
+  entries.forEach(e=>{
+    const d=new Date(e.date+"T00:00:00");const{start}=weekRange(d);const key=toISO(start);
+    if(!map[key])map[key]={start,end:addDays(start,6),hours:0,money:0,count:0};
+    const job=jobs.find(j=>j.id===e.jobId);
+    map[key].hours=r2(map[key].hours+e.hours);
+    map[key].money=r2(map[key].money+e.hours*(job?job.rate:0));
+    map[key].count++;
+  });
+  return Object.values(map).sort((a,b)=>b.start-a.start);
+}
 
-    function addEntry(){
-      const date = (dateInput.value || "").trim();
-      const job = jobSelect.value;
-      const hours = parseNumber(hoursInput.value);
-      const note = (noteInput.value || "").trim();
+let draftJobs=[];
+function openRates(){draftJobs=jobs.map(j=>({...j}));renderRatesFields();document.getElementById("modalBg").classList.add("open");}
+function closeRates(){document.getElementById("modalBg").classList.remove("open");}
+function closeRatesIfOutside(e){if(e.target===document.getElementById("modalBg"))closeRates();}
+function renderRatesFields(){
+  document.getElementById("ratesFields").innerHTML=draftJobs.map((j,i)=>`
+    <div class="field" style="display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:end;margin-bottom:10px;">
+      <div><label>Назва роботи ${i+1}</label><input type="text" value="${esc(j.name)}" oninput="draftJobs[${i}].name=this.value"></div>
+      <div style="width:90px;"><label>€/год</label><input type="number" step="0.01" min="0" value="${j.rate}" oninput="draftJobs[${i}].rate=parseFloat(this.value)||0"></div>
+      ${draftJobs.length>1?`<button class="btn btn-danger" style="padding:9px 10px;align-self:end;" onclick="removeJob(${i})">✕</button>`:'<div></div>'}
+    </div>`).join("");
+}
+function addJob(){draftJobs.push({id:"job"+Date.now(),name:"Робота "+(draftJobs.length+1),rate:2.0});renderRatesFields();}
+function removeJob(i){draftJobs.splice(i,1);renderRatesFields();}
+function saveRates(){
+  if(draftJobs.some(j=>!j.name.trim()))return toast("Вкажи назву для кожної роботи");
+  jobs=draftJobs.map(j=>({...j,name:j.name.trim(),rate:r2(j.rate)}));
+  localStorage.setItem(RATES_KEY,JSON.stringify(jobs));closeRates();renderAll();toast("Ставки оновлено ✓");
+}
 
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return toast("Вибери дату календарем 📅");
-      if (!isFinite(hours) || hours <= 0) return toast("Вкажи години (>0) ⏱️");
+function loadEntries(){try{const r=localStorage.getItem(ENTRIES_KEY);const p=r?JSON.parse(r):[];return Array.isArray(p)?p:[];}catch{return[];}}
+function saveEntries(){localStorage.setItem(ENTRIES_KEY,JSON.stringify(entries));}
+function loadJobs(){try{const r=localStorage.getItem(RATES_KEY);const p=r?JSON.parse(r):null;return Array.isArray(p)&&p.length?p:[...defaultJobs];}catch{return[...defaultJobs];}}
 
-      entries.push({
-        id: makeId(),
-        date,
-        job,
-        hours: round2(hours),
-        note
-      });
-
-      saveEntries(entries);
-      hoursInput.value = "";
-      noteInput.value = "";
-      renderAll();
-      toast("Додано ✅");
-    }
-
-    function clearWeek(){
-      const { start, end } = getWeekRange(weekAnchor);
-      const before = entries.length;
-      entries = entries.filter(e => {
-        const d = new Date(e.date + "T00:00:00");
-        return !(d >= start && d <= end);
-      });
-      saveEntries(entries);
-      renderAll();
-      toast(before === entries.length ? "Немає записів у цьому тижні" : "Тиждень очищено 🧹");
-    }
-
-    function exportJson(){
-      const data = { exportedAt: new Date().toISOString(), appVersion: APP_VERSION, rates, entries };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "work-hours-export.json";
-      a.click();
-      URL.revokeObjectURL(a.href);
-      toast("Експорт зроблено 📦");
-    }
-
-    function setRates(){
-      const r1 = prompt("Ставка Робота 1 (€/год):", String(rates.job1));
-      if (r1 === null) return;
-      const r2 = prompt("Ставка Робота 2 (€/год):", String(rates.job2));
-      if (r2 === null) return;
-
-      const n1 = parseNumber(r1);
-      const n2 = parseNumber(r2);
-      if (!isFinite(n1) || !isFinite(n2) || n1 < 0 || n2 < 0) return toast("Некоректні ставки 😅");
-
-      rates = { job1: round2(n1), job2: round2(n2) };
-      saveRates(rates);
-      renderAll();
-      toast("Ставки оновлено ✅");
-    }
-
-    // ====== RENDER ======
-    function renderAll(){
-      applyRatesToSelect();
-
-      const { start, end } = getWeekRange(weekAnchor);
-      document.getElementById("weekLabel").textContent = formatWeekLabel(start, end);
-      document.getElementById("ratesNote").textContent =
-        `Ставки: Р1 = ${fmt(rates.job1)} €/год • Р2 = ${fmt(rates.job2)} €/год`;
-
-      const weekEntries = entries
-        .map(e => ({...e, dateObj: new Date(e.date + "T00:00:00")}))
-        .filter(e => e.dateObj >= start && e.dateObj <= end)
-        .sort((a,b) => a.dateObj - b.dateObj);
-
-      renderTable(weekEntries);
-      renderSummary(weekEntries);
-    }
-
-    function renderTable(list){
-      rowsEl.innerHTML = "";
-      if (list.length === 0){
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td colspan="6" style="color:var(--muted); padding:14px;">Немає записів за цей тиждень.</td>`;
-        rowsEl.appendChild(tr);
-        return;
-      }
-
-      for (const e of list){
-        const money = round2(e.hours * rates[e.job]);
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${formatDateShort(e.dateObj)}</td>
-          <td>${e.job === "job1" ? "Робота 1" : "Робота 2"}</td>
-          <td class="mono">${fmt(e.hours)}</td>
-          <td class="mono">${fmt(money)} €</td>
-          <td style="color:var(--muted)">${escapeHtml(e.note || "")}</td>
-          <td>
-            <div class="actions">
-              <button class="iconBtn" onclick="editEntry('${e.id}')">✎</button>
-              <button class="iconBtn del" onclick="deleteEntry('${e.id}')">🗑</button>
-            </div>
-          </td>
-        `;
-        rowsEl.appendChild(tr);
-      }
-    }
-
-    function renderSummary(list){
-      let h1 = 0, h2 = 0;
-      for (const e of list){
-        if (e.job === "job1") h1 += e.hours; else h2 += e.hours;
-      }
-      h1 = round2(h1); h2 = round2(h2);
-      const totalH = round2(h1 + h2);
-
-      const m1 = round2(h1 * rates.job1);
-      const m2 = round2(h2 * rates.job2);
-      const totalM = round2(m1 + m2);
-
-      setText("kpiH1", fmt(h1));
-      setText("kpiM1", `${fmt(m1)} €`);
-      setText("kpiH2", fmt(h2));
-      setText("kpiM2", `${fmt(m2)} €`);
-      setText("kpiHours", fmt(totalH));
-      setText("kpiMoney", `${fmt(totalM)} €`);
-    }
-
-    function setText(id, v){ document.getElementById(id).textContent = v; }
-
-    function applyRatesToSelect(){
-      const opt1 = jobSelect.querySelector('option[value="job1"]');
-      const opt2 = jobSelect.querySelector('option[value="job2"]');
-      opt1.textContent = `Робота 1 (${fmt(rates.job1)} €/год)`;
-      opt2.textContent = `Робота 2 (${fmt(rates.job2)} €/год)`;
-    }
-
-    // ====== EDIT/DELETE ======
-    function deleteEntry(id){
-      entries = entries.filter(x => x.id !== id);
-      saveEntries(entries);
-      renderAll();
-      toast("Видалено 🗑");
-    }
-
-    function editEntry(id){
-      const e = entries.find(x => x.id === id);
-      if (!e) return;
-
-      const newHours = prompt("Нові години:", String(e.hours));
-      if (newHours === null) return;
-      const nH = parseNumber(newHours);
-      if (!isFinite(nH) || nH <= 0) return toast("Некоректні години");
-
-      const newNote = prompt("Примітка (можна пусто):", e.note || "");
-      if (newNote === null) return;
-
-      e.hours = round2(nH);
-      e.note = String(newNote).trim();
-      saveEntries(entries);
-      renderAll();
-      toast("Оновлено ✅");
-    }
-
-    // ====== STORAGE ======
-    function loadEntries(){
-      try{
-        const raw = localStorage.getItem(STORAGE_KEY);
-        const parsed = raw ? JSON.parse(raw) : [];
-        return Array.isArray(parsed) ? parsed : [];
-      }catch{ return []; }
-    }
-    function saveEntries(arr){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
-    }
-    function loadRates(){
-      try{
-        const raw = localStorage.getItem(SETTINGS_KEY);
-        const parsed = raw ? JSON.parse(raw) : null;
-        if (parsed && typeof parsed.job1 === "number" && typeof parsed.job2 === "number") return parsed;
-        return defaultRates;
-      }catch{ return defaultRates; }
-    }
-    function saveRates(obj){
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(obj));
-    }
-
-    // ====== WEEK ======
-    function getWeekRange(anchor){
-      const d = stripTime(new Date(anchor));
-      const day = (d.getDay() + 6) % 7; // Mon=0..Sun=6
-      const start = addDays(d, -day);
-      const end = addDays(start, 6);
-      return { start, end };
-    }
-    function formatWeekLabel(start, end){
-      const s = `${pad2(start.getDate())}.${pad2(start.getMonth()+1)}`;
-      const e = `${pad2(end.getDate())}.${pad2(end.getMonth()+1)}`;
-      return `${s} – ${e}`;
-    }
-
-    // ====== UTILS ======
-    function stripTime(d){ const x = new Date(d); x.setHours(0,0,0,0); return x; }
-    function addDays(d,n){ const x = new Date(d); x.setDate(x.getDate()+n); return stripTime(x); }
-    function toISODate(d){
-      const x = stripTime(d);
-      return `${x.getFullYear()}-${pad2(x.getMonth()+1)}-${pad2(x.getDate())}`;
-    }
-    function formatDateShort(d){ return `${pad2(d.getDate())}.${pad2(d.getMonth()+1)}`; }
-    function pad2(n){ return String(n).padStart(2,"0"); }
-    function parseNumber(v){
-      if (typeof v !== "string") v = String(v ?? "");
-      v = v.replace(",", ".").trim();
-      return Number(v);
-    }
-    function round2(n){ return Math.round(n*100)/100; }
-    function fmt(n){ return (Math.round(Number(n)*100)/100).toFixed(2); }
-    function escapeHtml(s){
-      return String(s)
-        .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;").replaceAll("'","&#039;");
-    }
-    function makeId(){ return `${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}`; }
-    function toast(msg){
-      const el = document.getElementById("toast");
-      el.textContent = msg;
-      el.classList.add("show");
-      clearTimeout(el._t);
-      el._t = setTimeout(()=> el.classList.remove("show"), 1800);
-    }
-  </script>
+function weekRange(anchor){const d=stripTime(new Date(anchor));const day=(d.getDay()+6)%7;const start=addDays(d,-day);return{start,end:addDays(start,6)};}
+function weekLabel(s,e){return`${pad(s.getDate())}.${pad(s.getMonth()+1)} – ${pad(e.getDate())}.${pad(e.getMonth()+1)}`;}
+function stripTime(d){const x=new Date(d);x.setHours(0,0,0,0);return x;}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return stripTime(x);}
+function toISO(d){const x=stripTime(d);return`${x.getFullYear()}-${pad(x.getMonth()+1)}-${pad(x.getDate())}`;}
+function fmtDate(d){return`${pad(d.getDate())}.${pad(d.getMonth()+1)}`;}
+function pad(n){return String(n).padStart(2,"0");}
+function parseNum(v){return Number(String(v||"").replace(",",".").trim());}
+function r2(n){return Math.round(n*100)/100;}
+function fmt(n){return(Math.round(Number(n)*100)/100).toFixed(2);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function uid(){return Date.now().toString(16)+"-"+Math.random().toString(16).slice(2);}
+function toast(msg){const el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove("show"),2000);}
+</script>
 </body>
 </html>
