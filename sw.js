@@ -1,4 +1,4 @@
-const CACHE = "hours-tracker-cache-v2";
+const CACHE = "hours-tracker-cache-v3";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
@@ -20,4 +20,3 @@ self.addEventListener("fetch", (e) => {
     caches.match(e.request).then((cached) => cached || fetch(e.request))
   );
 });
-
