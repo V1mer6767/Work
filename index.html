@@ -3,27 +3,28 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <meta name="theme-color" content="#0f0f0f"/>
+  <meta name="theme-color" content="#0c1210"/>
   <title>Трекер робочих годин</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#0f0f0f;
-      --surface:#161616;
-      --surface2:#1e1e1e;
-      --surface3:#252525;
-      --border:#2a2a2a;
-      --border2:#333;
-      --text:#f5f5f5;
-      --muted:#888;
-      --muted2:#555;
-      --accent:#e8ff47;
-      --accent-dim:rgba(232,255,71,.08);
-      --accent-dim2:rgba(232,255,71,.15);
-      --danger:#ff4444;
-      --danger-dim:rgba(255,68,68,.1);
-      --success:#4dff91;
+      --bg:#0c1210;
+      --surface:#121a17;
+      --surface2:#182220;
+      --surface3:#1f2b27;
+      --border:#26332f;
+      --border2:#32423c;
+      --text:#eef3f0;
+      --muted:#84948d;
+      --muted2:#586159;
+      --accent:#e8b34c;
+      --accent-dim:rgba(232,179,76,.09);
+      --accent-dim2:rgba(232,179,76,.17);
+      --danger:#ff6b5e;
+      --danger-dim:rgba(255,107,94,.1);
+      --success:#5fd39a;
+      --display:'Space Grotesk',sans-serif;
       --r:10px;
       --r2:14px;
     }
@@ -35,12 +36,13 @@
       min-height:100vh;
       font-size:14px;
       line-height:1.5;
+      -webkit-font-smoothing:antialiased;
     }
     .mono{font-family:'DM Mono',monospace;}
     .app{max-width:960px;margin:0 auto;padding:32px 20px 80px;}
     .header{margin-bottom:32px;}
     .header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px;}
-    .brand h1{font-size:22px;font-weight:600;letter-spacing:-.3px;color:var(--text);}
+    .brand h1{font-family:var(--display);font-size:23px;font-weight:600;letter-spacing:-.3px;color:var(--text);}
     .brand p{font-size:12px;color:var(--muted);margin-top:2px;}
     .week-nav{display:flex;align-items:center;gap:0;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;}
     .week-nav button{background:none;border:none;color:var(--muted);cursor:pointer;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:13px;transition:color .15s,background .15s;}
@@ -48,30 +50,35 @@
     .week-nav .week-label{padding:8px 16px;font-size:13px;font-weight:500;color:var(--text);border-left:1px solid var(--border);border-right:1px solid var(--border);min-width:130px;text-align:center;white-space:nowrap;}
     .week-nav .btn-today{background:none;border:none;color:var(--accent);cursor:pointer;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;transition:background .15s;}
     .week-nav .btn-today:hover{background:var(--accent-dim);}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;}
-    @media(max-width:600px){.stats{grid-template-columns:1fr 1fr;}}
-    .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:16px 14px;}
-    .stat.accent{background:var(--accent-dim);border-color:rgba(232,255,71,.25);}
-    .stat label{font-size:11px;color:var(--muted);letter-spacing:.4px;text-transform:uppercase;display:block;margin-bottom:6px;}
-    .stat strong{font-size:22px;font-weight:600;color:var(--text);display:block;line-height:1;font-family:'DM Mono',monospace;}
-    .stat.accent strong{color:var(--accent);}
-    .stat small{font-size:11px;color:var(--muted2);margin-top:4px;display:block;}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
+    @media(max-width:480px){.stats{grid-template-columns:1fr;}}
+    .flip-card{position:relative;background:linear-gradient(135deg,var(--surface2),var(--surface));border:1.5px dashed var(--border2);border-radius:var(--r2);padding:16px 16px 14px;cursor:pointer;user-select:none;transition:transform .12s,border-color .15s;-webkit-tap-highlight-color:transparent;}
+    .flip-card:hover{border-color:var(--muted2);}
+    .flip-card:active{transform:scale(.97);}
+    .flip-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+    .flip-card-top label{font-size:11px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;}
+    .flip-dots{display:flex;gap:4px;}
+    .flip-dots .dot{width:13px;height:4px;border-radius:2px;background:var(--border2);transition:background .2s;}
+    .flip-dots .dot.active{background:var(--accent);}
+    .flip-card strong{font-family:'DM Mono',monospace;font-size:24px;font-weight:600;color:var(--text);display:block;line-height:1;}
+    .flip-card.money strong{color:var(--accent);}
+    .flip-card small{font-size:11px;color:var(--muted2);margin-top:5px;display:block;}
     .main{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start;}
     @media(max-width:760px){.main{grid-template-columns:1fr;}}
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);box-shadow:0 1px 0 rgba(0,0,0,.15);}
     .card-head{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;}
-    .card-head h2{font-size:14px;font-weight:600;color:var(--text);}
+    .card-head h2{font-family:var(--display);font-size:14px;font-weight:600;color:var(--text);letter-spacing:-.1px;}
     .card-body{padding:18px;}
     .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
     @media(max-width:480px){.form-grid{grid-template-columns:1fr;}}
     .field label{font-size:11px;color:var(--muted);display:block;margin-bottom:5px;letter-spacing:.2px;}
     .field input,.field select{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .15s,box-shadow .15s;}
-    .field input:focus,.field select:focus{border-color:rgba(232,255,71,.4);box-shadow:0 0 0 3px rgba(232,255,71,.07);}
+    .field input:focus,.field select:focus{border-color:rgba(232,179,76,.45);box-shadow:0 0 0 3px rgba(232,179,76,.08);}
     .field select option{background:#1e1e1e;}
     .btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px;}
     .btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:var(--r);padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;}
-    .btn-primary{background:var(--accent);color:#0f0f0f;}
-    .btn-primary:hover{background:#f5ff7a;}
+    .btn-primary{background:var(--accent);color:#16130a;}
+    .btn-primary:hover{background:#f2c470;}
     .btn-primary:active{transform:scale(.98);}
     .btn-ghost{background:var(--surface2);color:var(--muted);border:1px solid var(--border2);}
     .btn-ghost:hover{color:var(--text);background:var(--surface3);}
@@ -99,11 +106,14 @@
     .history-week-label{font-size:13px;font-weight:500;}
     .history-week-money{font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);}
     .history-week-detail{font-size:11px;color:var(--muted);margin-top:3px;}
-    .alltime{background:var(--accent-dim);border:1px solid rgba(232,255,71,.2);border-radius:var(--r2);padding:16px;margin-bottom:14px;}
-    .alltime label{font-size:11px;color:rgba(232,255,71,.7);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px;}
+    .alltime{position:relative;background:var(--accent-dim);border:1px solid rgba(232,179,76,.22);border-radius:var(--r2);padding:18px 16px 16px;margin-bottom:14px;overflow:hidden;}
+    .alltime::before{content:"";position:absolute;left:0;right:0;bottom:38px;height:0;border-top:1.5px dashed rgba(232,179,76,.3);}
+    .alltime::after{content:"";position:absolute;left:-8px;right:-8px;bottom:32px;height:12px;background:radial-gradient(circle 6px,var(--bg) 6px,transparent 6.5px);background-size:16px 12px;background-repeat:repeat-x;background-position:0 0;}
+    .alltime label{font-size:11px;color:rgba(232,179,76,.75);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;}
     .alltime-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;}
-    .alltime strong{font-family:'DM Mono',monospace;font-size:26px;font-weight:600;color:var(--accent);}
-    .alltime small{font-size:12px;color:rgba(232,255,71,.6);}
+    .alltime strong{font-family:'DM Mono',monospace;font-size:27px;font-weight:600;color:var(--accent);}
+    .alltime small{font-size:12px;color:rgba(232,179,76,.65);}
+    .alltime-stub{margin-top:16px;padding-top:10px;font-size:11px;color:var(--muted2);letter-spacing:.3px;display:flex;justify-content:space-between;}
     .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s;}
     .modal-bg.open{opacity:1;pointer-events:all;}
     .modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r2);padding:24px;width:340px;max-width:90vw;transform:translateY(8px);transition:transform .2s;}
@@ -139,10 +149,22 @@
       </div>
     </div>
     <div class="stats">
-      <div class="stat"><label>Цей тиждень • год</label><strong id="kpiHours" class="mono">0.00</strong></div>
-      <div class="stat accent"><label>Цей тиждень • €</label><strong id="kpiMoney">0.00</strong></div>
-      <div class="stat"><label>Загальний час</label><strong id="kpiAllH" class="mono">0.00</strong><small>всі тижні</small></div>
-      <div class="stat accent"><label>Всього зароблено</label><strong id="kpiAllM">0.00</strong><small>всі тижні</small></div>
+      <div class="flip-card money" id="hoursCard" onclick="toggleHoursView()">
+        <div class="flip-card-top">
+          <label id="hoursCardLabel">Години • тиждень</label>
+          <span class="flip-dots"><span class="dot" id="hoursDot0"></span><span class="dot" id="hoursDot1"></span></span>
+        </div>
+        <strong id="kpiHoursCard" class="mono">0.00</strong>
+        <small id="hoursCardSub">торкніться для «весь час»</small>
+      </div>
+      <div class="flip-card money" id="moneyCard" onclick="toggleMoneyView()">
+        <div class="flip-card-top">
+          <label id="moneyCardLabel">Заробіток • тиждень</label>
+          <span class="flip-dots"><span class="dot" id="moneyDot0"></span><span class="dot" id="moneyDot1"></span></span>
+        </div>
+        <strong id="kpiMoneyCard">0.00 €</strong>
+        <small id="moneyCardSub">торкніться для «весь час»</small>
+      </div>
     </div>
   </div>
 
@@ -197,12 +219,16 @@
   </div>
 
   <div id="tab-history" class="section-hidden">
-    <div class="alltime">
-      <label>Всього зароблено за весь час</label>
-      <div class="alltime-row">
-        <strong id="histAllMoney">0.00 €</strong>
-        <small id="histAllHours">0.00 год</small>
+    <div class="alltime" id="allTimeCard" onclick="toggleHistView()" style="cursor:pointer;">
+      <div class="flip-card-top" style="margin-bottom:6px;">
+        <label id="histLabel" style="margin-bottom:0;">Всього зароблено за весь час</label>
+        <span class="flip-dots"><span class="dot" id="histDot0"></span><span class="dot" id="histDot1"></span></span>
       </div>
+      <div class="alltime-row">
+        <strong id="histMain">0.00 €</strong>
+        <small id="histSub">0.00 год</small>
+      </div>
+      <div class="alltime-stub"><span id="histStubHint">торкніться для годин</span><span id="histWeekCountStub">—</span></div>
     </div>
     <div class="card">
       <div class="card-head">
@@ -238,9 +264,22 @@
 <script>
 const ENTRIES_KEY="wh_entries_v2";
 const RATES_KEY="wh_rates_v2";
+const VIEW_H_KEY="wh_view_hours";
+const VIEW_M_KEY="wh_view_money";
+const VIEW_HIST_KEY="wh_view_hist";
 const JOB_COLORS=["#7aacff","#ffb83c","#64dca0","#d464ff","#ff6464","#47e8ff"];
-const defaultJobs=[{id:"job1",name:"Робота 1",rate:3.0},{id:"job2",name:"Робота 2",rate:1.5}];
+const defaultJobs=[{id:"job1",name:"Робота 1",rate:5.0},{id:"job2",name:"Робота 2",rate:1.5}];
+let hoursView=localStorage.getItem(VIEW_H_KEY)==="all"?"all":"week";
+let moneyView=localStorage.getItem(VIEW_M_KEY)==="all"?"all":"week";
+let histView=localStorage.getItem(VIEW_HIST_KEY)==="hours"?"hours":"money";
 let jobs=loadJobs();
+(function migrateRate(){
+  const FLAG="wh_rate_migrated_v3to5";
+  if(localStorage.getItem(FLAG))return;
+  const j1=jobs.find(j=>j.id==="job1");
+  if(j1&&j1.rate===3.0){j1.rate=5.0;localStorage.setItem(RATES_KEY,JSON.stringify(jobs));}
+  localStorage.setItem(FLAG,"1");
+})();
 let entries=loadEntries();
 let weekAnchor=stripTime(new Date());
 document.getElementById("dateInput").value=toISO(new Date());
@@ -338,11 +377,19 @@ function renderTopStats(weekEntries){
   const wM=r2(weekEntries.reduce((s,e)=>{const j=jobs.find(j=>j.id===e.jobId);return s+e.hours*(j?j.rate:0);},0));
   const aH=r2(entries.reduce((s,e)=>s+e.hours,0));
   const aM=r2(entries.reduce((s,e)=>{const j=jobs.find(j=>j.id===e.jobId);return s+e.hours*(j?j.rate:0);},0));
-  document.getElementById("kpiHours").textContent=fmt(wH);
-  document.getElementById("kpiMoney").textContent=fmt(wM)+" €";
-  document.getElementById("kpiAllH").textContent=fmt(aH);
-  document.getElementById("kpiAllM").textContent=fmt(aM)+" €";
+  document.getElementById("kpiHoursCard").textContent=fmt(hoursView==="week"?wH:aH);
+  document.getElementById("hoursCardLabel").textContent=hoursView==="week"?"Години • тиждень":"Години • весь час";
+  document.getElementById("hoursCardSub").textContent=hoursView==="week"?"торкніться для «весь час»":"торкніться для «цей тиждень»";
+  document.getElementById("hoursDot0").classList.toggle("active",hoursView==="week");
+  document.getElementById("hoursDot1").classList.toggle("active",hoursView==="all");
+  document.getElementById("kpiMoneyCard").textContent=fmt(moneyView==="week"?wM:aM)+" €";
+  document.getElementById("moneyCardLabel").textContent=moneyView==="week"?"Заробіток • тиждень":"Заробіток • весь час";
+  document.getElementById("moneyCardSub").textContent=moneyView==="week"?"торкніться для «весь час»":"торкніться для «цей тиждень»";
+  document.getElementById("moneyDot0").classList.toggle("active",moneyView==="week");
+  document.getElementById("moneyDot1").classList.toggle("active",moneyView==="all");
 }
+function toggleHoursView(){hoursView=hoursView==="week"?"all":"week";localStorage.setItem(VIEW_H_KEY,hoursView);renderAll();}
+function toggleMoneyView(){moneyView=moneyView==="week"?"all":"week";localStorage.setItem(VIEW_M_KEY,moneyView);renderAll();}
 function renderRecentWeeks(){
   const el=document.getElementById("recentWeeks");const weeks=getWeeksSummary();
   if(!weeks.length){el.innerHTML=`<div style="color:var(--muted);font-size:13px;">Немає даних</div>`;return;}
@@ -352,13 +399,26 @@ function renderHistory(){
   const weeks=getWeeksSummary();
   const aH=r2(entries.reduce((s,e)=>s+e.hours,0));
   const aM=r2(entries.reduce((s,e)=>{const j=jobs.find(j=>j.id===e.jobId);return s+e.hours*(j?j.rate:0);},0));
-  document.getElementById("histAllMoney").textContent=fmt(aM)+" €";
-  document.getElementById("histAllHours").textContent=fmt(aH)+" год";
+  if(histView==="money"){
+    document.getElementById("histLabel").textContent="Всього зароблено за весь час";
+    document.getElementById("histMain").textContent=fmt(aM)+" €";
+    document.getElementById("histSub").textContent=fmt(aH)+" год";
+    document.getElementById("histStubHint").textContent="торкніться для годин";
+  }else{
+    document.getElementById("histLabel").textContent="Всього відпрацьовано годин";
+    document.getElementById("histMain").textContent=fmt(aH)+" год";
+    document.getElementById("histSub").textContent=fmt(aM)+" €";
+    document.getElementById("histStubHint").textContent="торкніться для заробітку";
+  }
+  document.getElementById("histDot0").classList.toggle("active",histView==="money");
+  document.getElementById("histDot1").classList.toggle("active",histView==="hours");
   document.getElementById("histWeekCount").textContent=`${weeks.length} тижнів`;
+  document.getElementById("histWeekCountStub").textContent=`${weeks.length} тижнів у роботі`;
   const tbody=document.getElementById("histRows");
   if(!weeks.length){tbody.innerHTML=`<tr><td colspan="4" class="empty-row">Немає даних</td></tr>`;return;}
   tbody.innerHTML=weeks.map(w=>`<tr><td style="cursor:pointer;color:var(--accent);" onclick="jumpToWeekAndTab('${toISO(w.start)}')">${weekLabel(w.start,w.end)}</td><td class="mono">${fmt(w.hours)}</td><td class="mono" style="color:var(--accent)">${fmt(w.money)} €</td><td>${w.count}</td></tr>`).join("");
 }
+function toggleHistView(){histView=histView==="money"?"hours":"money";localStorage.setItem(VIEW_HIST_KEY,histView);renderHistory();}
 function jumpToWeek(isoDate){weekAnchor=new Date(isoDate+"T00:00:00");renderAll();document.querySelectorAll(".tab")[0].click();}
 function jumpToWeekAndTab(isoDate){weekAnchor=new Date(isoDate+"T00:00:00");renderAll();document.querySelectorAll(".tab")[0].click();}
 
